@@ -1,20 +1,16 @@
 // Завдання 1
 const itemElem = document.querySelectorAll(".item");
 const getNumberElements = (elem) => {
-  let lengthCategories = 0;
-  elem.forEach((element, index) => {
-    return (lengthCategories += index);
-  });
-  return `Number of categories: ${lengthCategories}`;
+  return `Number of categories: ${itemElem.length}`;
 };
-
 console.log(getNumberElements(itemElem));
 
 const lengthItem = document.querySelectorAll(".item");
 
 lengthItem.forEach((category) => {
-  const title = category.querySelector("h2").textContent;
-  const elements = category.querySelectorAll("li").length;
+  const title = category.firstElementChild.textContent;
+  const elementsList = category.children[1];
+  const elements = elementsList.children.length;
   console.log(`Category: ${title}`);
   console.log(`Elements: ${elements}`);
 });
@@ -30,13 +26,13 @@ const ingredients = [
   "Condiments",
 ];
 const productList = document.querySelector("#ingredients");
-for (let i = 0; i < ingredients.length; i += 1) {
-  const item = document.createElement("li");
-  item.classList.add("item");
-  item.textContent = ingredients[i];
-  productList.append(item);
-}
 console.log(productList);
+const addItem = ingredients.map((elem) => {
+  const item = document.createElement("li");
+  item.textContent = elem;
+  return item;
+});
+productList.append(...addItem);
 
 // Завдання 3
 const images = [
@@ -53,13 +49,13 @@ const images = [
     alt: "Group of Horses Running",
   },
 ];
-images.map((params) => {
-  const gallery = document.querySelector(".gallery");
-  gallery.insertAdjacentHTML(
-    "beforeend",
-    `<li><img class= "gallery-item-img" src="${params.url}" alt="${params.alt}"></li>`
-  );
-});
+const gallery = document.querySelector(".gallery");
+const addImages = images
+  .map((params) => {
+    return `<li><img class= "gallery-item-img" src="${params.url}" alt="${params.alt}"></li>`;
+  })
+  .join("");
+gallery.insertAdjacentHTML("beforeend", addImages);
 // Завдання 4
 
 const decrementBtn = document.querySelector(".js-btnDecriment");
@@ -77,7 +73,7 @@ incrementBtn.addEventListener("click", () => {
 const inputName = document.querySelector("#name-input");
 const inputValue = document.querySelector("#name-output");
 inputName.addEventListener("input", (params) => {
-  inputName.value === ""
+  inputName.value.trim() === ""
     ? (inputValue.textContent = "Anonymous")
     : (inputValue.textContent = params.currentTarget.value);
 });
@@ -103,6 +99,7 @@ validationInput.addEventListener("input", () => {
 
 const controlFontSize = document.querySelector("#font-size-control");
 const text = document.querySelector("#text");
+text.style.fontSize = 56 + "px";
 
 controlFontSize.addEventListener("input", (elem) => {
   const textFontSize = elem.currentTarget.value;
@@ -119,18 +116,17 @@ form.addEventListener("submit", (elem) => {
   const email = formElements.email.value;
   const password = formElements.password.value;
 
-  email === "" || password === ""
-    ? alert("всі поля повинні бути заповнені")
-    : email,
-    password;
-
   const user = {
     email,
     password,
   };
 
-  console.log(user);
-  form.reset();
+  if (email === "" || password === "") {
+    alert("Всі поля повинні бути заповнені");
+  } else {
+    console.log(user);
+    form.reset();
+  }
 });
 
 // Завдання 9
@@ -141,9 +137,10 @@ function getRandomHexColor() {
     .padStart(6, 0)}`;
 }
 const btnChangeColor = document.querySelector(".change-color");
-
+const bodyColor = document.querySelector(".color");
 btnChangeColor.addEventListener("click", () => {
   document.body.style.background = `${getRandomHexColor()}`;
+  bodyColor.textContent = getRandomHexColor();
 });
 
 // Завдання 10
@@ -159,20 +156,25 @@ const createBtn = document.querySelector("#controls [data-create]");
 const destroyBtn = document.querySelector("#controls [data-destroy]");
 const mainBox = document.querySelector("#boxes");
 
-function createBoxes(elem) {
-  for (let i = 0; i < elem; i += 1) {
-    const box = document.createElement("div");
-    box.style.width = 30 + i * 10 + "px";
-    box.style.height = 30 + "px";
-    box.style.background = getRandomHexColor();
-    mainBox.append(box);
-  }
-}
-function destroyBoxes(elem) {
-  while (elem.firstChild) {
-    elem.removeChild(elem.firstChild);
-  }
-}
+const min = parseInt(numInput.min);
+const max = parseInt(numInput.max);
+const step = parseInt(numInput.step);
 
 createBtn.addEventListener("click", () => createBoxes(numInput.value));
 destroyBtn.addEventListener("click", () => destroyBoxes(mainBox));
+
+function createBoxes(elem) {
+  if (elem > min && elem < max) {
+    for (let i = 0; i < elem; i += step) {
+      const box = document.createElement("div");
+      box.style.width = 30 + i * 10 + "px";
+      box.style.height = 30 + i * 10 + "px";
+      box.style.background = getRandomHexColor();
+      mainBox.append(box);
+    }
+  }
+}
+function destroyBoxes(elem) {
+  elem.innerHTML = null;
+  numInput.value = "";
+}
