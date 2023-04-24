@@ -139,8 +139,8 @@ function getRandomHexColor() {
 const btnChangeColor = document.querySelector(".change-color");
 const bodyColor = document.querySelector(".color");
 btnChangeColor.addEventListener("click", () => {
-  document.body.style.background = `${getRandomHexColor()}`;
-  bodyColor.textContent = getRandomHexColor();
+  const color = (document.body.style.background = `${getRandomHexColor()}`);
+  bodyColor.textContent = color;
 });
 
 // Завдання 10
